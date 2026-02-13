@@ -1,3 +1,15 @@
 nltk
 pandas
 dotenv
+
+nltk
+pandas
+dotenv
+lang
+
+sentence_transformers
+# embedding
+
+chromadb
+tqdm
+scikit-learn
