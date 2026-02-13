@@ -1,0 +1,12 @@
+job.yamlapiVersion: batch/v1
+kind: Job
+metadata:
+  name: ml-batch-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: ml-container
+        image: ml-pipeline:1.0
+        imagePullPolicy: Never
+      restartPolicy: Never

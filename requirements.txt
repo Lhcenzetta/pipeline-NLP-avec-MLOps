@@ -5,7 +5,6 @@ dotenv
 nltk
 pandas
 dotenv
-lang
 
 sentence_transformers
 # embedding
