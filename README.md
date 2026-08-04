@@ -1,24 +1,24 @@
-# Pipeline NLP avec MLOps
+# NLP Pipeline with MLOps
 
-**Conception, entrainement et supervision d'un modèle NLP de classification de tickets support à partir d'emails clients.**
+**Design, training, and monitoring of an NLP model for classifying support tickets from customer emails.**
 
-Ce projet met en place une chaîne MLOps complète pour classifier automatiquement les tickets de support client en 4 catégories : `Incident`, `Request`, `Problem` et `Change`.
+This project implements a full MLOps pipeline to automatically classify customer support tickets into 4 categories: `Incident`, `Request`, `Problem`, and `Change`.
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![MLOps](https://img.shields.io/badge/MLOps-CI%2FCD-green)
 
 ---
 
-## Table des matières
+## Table of Contents
 
 - [Architecture](#architecture)
 - [Pipeline](#pipeline)
-- [Structure du projet](#structure-du-projet)
+- [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
 - [MLOps / Orchestration](#mlops--orchestration)
 - [Notebooks](#notebooks)
-- [Licence](#licence)
+- [License](#license)
 
 ---
 
@@ -26,8 +26,8 @@ Ce projet met en place une chaîne MLOps complète pour classifier automatiqueme
 
 ```
 ┌─────────────────┐   ┌─────────────────────┐   ┌──────────────────────┐
-│  Emails clients │──▶│  Préprocessing NLP  │──▶│  Embeddings          │
-│   (dataset)     │   │  (EDA + nettoyage)  │   │  (SentenceTransform) │
+│  Customer emails│──▶│  NLP Preprocessing  │──▶│  Embeddings          │
+│   (dataset)     │   │  (EDA + cleaning)   │   │  (SentenceTransform) │
 └─────────────────┘   └─────────────────────┘   └──────────┬───────────┘
                                                            │
                                              ┌─────────────┴─────────────┐
@@ -38,7 +38,7 @@ Ce projet met en place une chaîne MLOps complète pour classifier automatiqueme
                                     └────────┬────────┘          └─────────────────┘
                                              ▼
                                     ┌─────────────────┐
-                                    │  Prédiction     │
+                                    │  Prediction     │
                                     │ Incident/Request│
                                     │ Problem/Change  │
                                     └─────────────────┘
@@ -46,98 +46,98 @@ Ce projet met en place une chaîne MLOps complète pour classifier automatiqueme
 
 ## Pipeline
 
-Le pipeline suit 4 étapes principales :
+The pipeline follows 4 main steps:
 
-| Étape | Script | Rôle |
-|-------|--------|------|
-| **1. EDA & feature engineering** | `Proccessing_nlp/EDA.ipynb` | Analyse exploratoire, gestion des valeurs manquantes, création des colonnes `full_tag` et `body_cols` |
-| **2. Préprocessing NLP** | `Proccessing_nlp/piplinenlp.ipynb` | Normalisation (minuscules), suppression de la ponctuation, tokenisation, suppression des stopwords |
-| **3. Embeddings** | `app/embedding.py` | Encodage des textes avec `paraphrase-multilingual-MiniLM-L12-v2`, normalisation L2 |
-| **4. Entrainement** | `app/piplineml.py` | Entrainement d'un classifieur `LogisticRegression`, évaluation, sauvegarde du modèle |
+| Step | Script | Role |
+|------|--------|------|
+| **1. EDA & feature engineering** | `Proccessing_nlp/EDA.ipynb` | Exploratory analysis, missing value handling, creation of `full_tag` and `body_cols` columns |
+| **2. NLP preprocessing** | `Proccessing_nlp/piplinenlp.ipynb` | Normalization (lowercase), punctuation removal, tokenization, stopword removal |
+| **3. Embeddings** | `app/embedding.py` | Text encoding with `paraphrase-multilingual-MiniLM-L12-v2`, L2 normalization |
+| **4. Training** | `app/piplineml.py` | `LogisticRegression` classifier training, evaluation, model saving |
 
-La prédiction (`app/main.py`) charge le modèle sauvegardé et classifie un nouveau ticket en une des 4 catégories de tickets support.
+Prediction (`app/main.py`) loads the saved model and classifies a new ticket into one of the 4 support ticket categories.
 
-## Structure du projet
+## Project Structure
 
 ```
 .
 ├── app/
-│   ├── embedding.py        # Génération des embeddings (SentenceTransformer)
-│   ├── piplineml.py        # Entrainement et évaluation du classifieur
-│   ├── vector_store.py     # Indexation des embeddings dans ChromaDB
-│   └── main.py             # Inference / prédiction d'un nouveau ticket
+│   ├── embedding.py        # Embedding generation (SentenceTransformer)
+│   ├── piplineml.py        # Classifier training and evaluation
+│   ├── vector_store.py     # Embedding indexing into ChromaDB
+│   └── main.py             # Inference / prediction of a new ticket
 ├── Proccessing_nlp/
-│   ├── EDA.ipynb           # Analyse exploratoire des données
-│   └── piplinenlp.ipynb    # Préprocessing NLP (nettoyage du texte)
+│   ├── EDA.ipynb           # Exploratory data analysis
+│   └── piplinenlp.ipynb    # NLP preprocessing (text cleaning)
 ├── model/
-│   └── model.joblib        # Modèle entrainé (LogisticRegression)
+│   └── model.joblib        # Trained model (LogisticRegression)
 ├── .github/workflows/
-│   └── ci-cd.yml           # Pipeline CI/CD (lint, build & push Docker)
-├── dockerfile              # Image Docker (Python 3.10-slim)
-├── job.yaml                # Job Kubernetes pour l'exécution du pipeline
-├── requirements.txt        # Dépendances Python
-└── .env                    # Variables d'environnement (chemins de données)
+│   └── ci-cd.yml           # CI/CD pipeline (lint, Docker build & push)
+├── dockerfile              # Docker image (Python 3.10-slim)
+├── job.yaml                # Kubernetes job for pipeline execution
+├── requirements.txt        # Python dependencies
+└── .env                    # Environment variables (data paths)
 ```
 
 ## Installation
 
 ```bash
-# Cloner le dépôt
-git clone <url-du-repo>
+# Clone the repository
+git clone <repo-url>
 cd project1-fixxe
 
-# Créer un environnement virtuel
+# Create a virtual environment
 python -m venv venv
 source venv/bin/activate
 
-# Installer les dépendances
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Variables d'environnement
+### Environment Variables
 
-Créez un fichier `.env` à la racine du projet et renseignez les chemins suivants :
+Create a `.env` file at the project root and fill in the following paths:
 
 ```env
-data_path = "chemin/vers/dataset.csv"           # Données brutes (emails clients)
-new_data = "chemin/vers/preprocessed_data.csv"  # Données prétraitées
-nlp_data = "chemin/vers/donnees_nlp.csv"        # Données après pipeline NLP
-embdiding_path = "chemin/vers/embeddings.npy"   # Embeddings sauvegardés
-model_path = "model/model.joblib"               # Modèle entrainé
-chroma_path = "chemin/vers/chroma_db"           # Base vectorielle ChromaDB
+data_path = "path/to/dataset.csv"               # Raw data (customer emails)
+new_data = "path/to/preprocessed_data.csv"      # Preprocessed data
+nlp_data = "path/to/nlp_data.csv"               # Data after NLP pipeline
+embdiding_path = "path/to/embeddings.npy"       # Saved embeddings
+model_path = "model/model.joblib"               # Trained model
+chroma_path = "path/to/chroma_db"               # ChromaDB vector store
 ```
 
-> ⚠️ Les chemins par défaut dans `.env` pointent vers un répertoire local. Adaptez-les à votre environnement.
+> ⚠️ The default paths in `.env` point to a local directory. Adjust them to your environment.
 
 ## Usage
 
-### 1. Entrainer le modèle
+### 1. Train the model
 
 ```bash
 python app/piplineml.py
 ```
 
-Ce script charge les embeddings et les données, entraine un `LogisticRegression`, affiche le rapport de classification et sauvegarde le modèle dans `model/model.joblib`.
+This script loads the embeddings and data, trains a `LogisticRegression`, prints the classification report, and saves the model to `model/model.joblib`.
 
-### 2. Faire une prédiction
+### 2. Make a prediction
 
 ```bash
 python app/main.py
 ```
 
-Exemple de sortie :
+Example output:
 
 ```
 Request
 ```
 
-### 3. Générer les embeddings (facultatif)
+### 3. Generate embeddings (optional)
 
 ```bash
 python app/embedding.py
 ```
 
-### 4. Indexer dans ChromaDB (recherche de similarité)
+### 4. Index into ChromaDB (similarity search)
 
 ```bash
 python app/vector_store.py
@@ -147,7 +147,7 @@ python app/vector_store.py
 
 ### Docker
 
-L'application est conteneurisée. Build de l'image :
+The application is containerized. Build the image:
 
 ```bash
 docker build -t ml-pipeline:1.0 .
@@ -156,7 +156,7 @@ docker run --rm ml-pipeline:1.0
 
 ### Kubernetes
 
-Le job Kubernetes (`job.yaml`) exécute le pipeline de machine learning en tant que job batch :
+The Kubernetes job (`job.yaml`) runs the machine learning pipeline as a batch job:
 
 ```bash
 kubectl apply -f job.yaml
@@ -164,21 +164,21 @@ kubectl apply -f job.yaml
 
 ### CI/CD
 
-Le workflow GitHub Actions (`.github/workflows/ci-cd.yml`) :
+The GitHub Actions workflow (`.github/workflows/ci-cd.yml`):
 
-- **test** : linting `flake8`, vérification de la qualité du code (`py_compile`)
-- **build-and-push** : build et push de l'image Docker vers GitHub Container Registry (`ghcr.io`) avec cache GHA
-- **notify** : étape de notification à la fin du pipeline
+- **test** : `flake8` linting, code quality check (`py_compile`)
+- **build-and-push** : Docker image build and push to GitHub Container Registry (`ghcr.io`) with GHA cache
+- **notify** : notification step at the end of the pipeline
 
-Le workflow se déclenche sur les pushs et pull requests vers `main` et `develop`.
+The workflow triggers on pushes and pull requests to `main` and `develop`.
 
 ## Notebooks
 
 | Notebook | Description |
 |----------|-------------|
-| `EDA.ipynb` | Analyse exploratoire : valeurs manquantes, fusion des tags, création de `body_cols` |
-| `piplinenlp.ipynb` | Pipeline de nettoyage NLP : normalisation, ponctuation, tokenisation, stopwords |
+| `EDA.ipynb` | Exploratory analysis: missing values, tag merging, `body_cols` creation |
+| `piplinenlp.ipynb` | NLP cleaning pipeline: normalization, punctuation, tokenization, stopwords |
 
-## Licence
+## License
 
-Ce projet est à usage pédagogique.
+This project is for educational purposes.
