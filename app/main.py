@@ -12,7 +12,12 @@ query = "Customer Support Inquiry,Seeking information on digital strategies that
 embding_query = embding_text(query)
 
 embding_query = np.array(embding_query).reshape(1, -1)
-
+def get_function_TEST(embding_query):
+    v = path_model
+    if (!path_model):
+        return none 
+    else:
+        return load_dotenv(path_model)
 
 mdoel = joblib.load(path_model)
 
