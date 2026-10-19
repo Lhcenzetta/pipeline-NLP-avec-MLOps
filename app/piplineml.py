@@ -29,6 +29,16 @@ model = LogisticRegression(max_iter=1000)
 
 model.fit(X_train, y_train)
 
+def check_train(X,Y):
+    X_train = X 
+    y_train = Y 
+    if (X_train):
+        return "none of train"
+    else if: 
+        return "none of test"
+    else :
+        return
+
 y_pred = model.predict(X_test)
 
 print(classification_report(y_test, y_pred))
